@@ -8,6 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    let databaseManager = DatabaseManager()
+    
     @IBOutlet weak var nameField: UITextField!
     @IBOutlet weak var ageField: UITextField!
     @IBOutlet weak var emailField: UITextField!
@@ -34,20 +37,11 @@ class ViewController: UIViewController {
             return
         }
         
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let student = StudentModel(name: name, age: Int16(age)!, email: email, password: password)
         
-        let student = Student(context: context)
-        student.name = name
-        student.age = Int16(age)!
-        student.email = email
-        student.password = password
-        
-        do{
-            try context.save()
-        }catch{
-            print("Student Saving Error: \(error)")
-        }
-        
+        databaseManager.addStudent(stud: student)
+//        applyAlert(text: "User Added!!!!")
+        navigationController?.popViewController(animated: true)
     }
     
     func applyAlert(text: String){
@@ -61,6 +55,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        navigationItem.title = "ADD STUDENT"
     }
 
 
