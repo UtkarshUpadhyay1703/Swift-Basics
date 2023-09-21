@@ -8,6 +8,7 @@
 import Combine
 import CoreLocation
 import UIKit
+
 class DeviceLocationService: NSObject,CLLocationManagerDelegate,ObservableObject{
     var coordinatesPublisher = PassthroughSubject<CLLocationCoordinate2D, Error>()
     private override init(){
@@ -29,7 +30,6 @@ class DeviceLocationService: NSObject,CLLocationManagerDelegate,ObservableObject
             locationManager.startUpdatingLocation()
         default:
             break
-//            deniedLocationAccessPublisher.send()
         }
     }
     
@@ -42,11 +42,11 @@ class DeviceLocationService: NSObject,CLLocationManagerDelegate,ObservableObject
         }
     }
     
-    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else{ return }
         coordinatesPublisher.send(location.coordinate)
     }
+    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         coordinatesPublisher.send(completion: .failure(error))
     }

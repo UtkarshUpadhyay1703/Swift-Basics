@@ -33,23 +33,23 @@ struct ContentView: View {
             .receive(on: DispatchQueue.main)
             .sink {completion in
                 if case .failure(let error) = completion{
-                    print(error)
-                }
-            } receiveValue: { coordinates in
+                    print("error : \(error)")}
+            }
+    receiveValue: { coordinates in
                 self.coordinates = (coordinates.latitude,coordinates.longitude)
             }
             .store(in: &tokens)
     }
     
     func observeLocationAccessDenied(){
-//        deviceLocationService.deniedLocationAccessPublisher
-//            .receive(on: DispatchQueue.main)
-//            .sink {
-//                print("show some kind of alert to the user")
-//            }
-//            .store(in: &tokens)
-    
-}
+        //        deviceLocationService.deniedLocationAccessPublisher
+        //            .receive(on: DispatchQueue.main)
+        //            .sink {
+        //                print("show some kind of alert to the user")
+        //            }
+        //            .store(in: &tokens)
+        
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
