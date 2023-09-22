@@ -47,6 +47,15 @@ extension StudentListViewController: UITableViewDataSource {
         content.text = "Name: \(student.name ?? "")"
         content.secondaryText = "Email: \(student.email ?? "")"
         
+        if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let imageURL = documentDirectory.appendingPathComponent(student.imageName ?? "Image_not_available").appendingPathExtension("png")
+            content.image = UIImage(contentsOfFile: imageURL.path)
+            
+            var imageProp = content.imageProperties
+            imageProp.maximumSize = CGSize(width: 80, height: 80)
+            content.imageProperties = imageProp
+        }
+        
         cell.contentConfiguration = content
         return cell
     }

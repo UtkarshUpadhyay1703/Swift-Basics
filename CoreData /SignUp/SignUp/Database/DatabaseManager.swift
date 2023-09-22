@@ -19,7 +19,7 @@ class DatabaseManager {
         student.age = stud.age
         student.email = stud.email
         student.password = stud.password
-        
+        student.imageName = stud.imageName
         do{
             try context.save()
         }catch{
