@@ -12,5 +12,5 @@ struct StudentModel {
     let age: Int16
     let email: String
     let password: String
-    let imageName: String
+    var imageName: String
 }

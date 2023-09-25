@@ -18,6 +18,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var profileImageView: UIImageView!
     private var isImageSelectedByStudent: Bool = false
+    @IBOutlet weak var submitButton: UIButton!
+    
+    var student: Student?
     
     @IBAction func onSubmitButtonClick(_ sender: Any) {
         guard let name = nameField.text, !name.isEmpty else {
@@ -25,7 +28,7 @@ class ViewController: UIViewController {
             return
         }
         
-        guard let age = ageField.text, !age.isEmpty else {
+        guard let age = ageField.text, !age.isEmpty || (Int16(age) ?? -1 < 1 || Int16(age) ?? 200 > 150) else {
             applyAlert(text: "Enter Age:")
             return
         }
@@ -44,12 +47,23 @@ class ViewController: UIViewController {
             applyAlert(text: "Please Choose your Profile Image!!!")
             return
         }
-        print("All validations are done....")
+        //        print("All validations are done....")
         
-        let imageName = UUID().uuidString
-        let student = StudentModel(name: name, age: Int16(age)!, email: email, password: password, imageName: imageName)
-        saveImageToDocumentDirectory(imageName: imageName)
-        databaseManager.addStudent(stud: student)
+        
+        if let student = student {
+            //Update
+            let newStudent = StudentModel(name: name, age: Int16(age)!, email: email, password: password, imageName: student.imageName ?? "Image_not_available")
+            databaseManager.updateStudent(stud: newStudent, student: student)
+            saveImageToDocumentDirectory(imageName: newStudent.imageName)
+        }else{
+            //Register
+            let imageName = UUID().uuidString
+            let newStudent = StudentModel(name: name, age: Int16(age)!, email: email, password: password, imageName: imageName)
+            saveImageToDocumentDirectory(imageName: imageName)
+            databaseManager.addStudent(stud: newStudent)
+        }
+        
+        
         navigationController?.popViewController(animated: true)
         //        applyAlert(text: "User Added!!!!")
     }
@@ -98,6 +112,7 @@ class ViewController: UIViewController {
     func configuration() {
         uiConfiguration()
         addGesture()
+        addStudentConfiguration()
     }
     
     func uiConfiguration(){
@@ -108,6 +123,24 @@ class ViewController: UIViewController {
     func addGesture() {
         let imageTab = UITapGestureRecognizer(target: self, action: #selector(ViewController.openGalary))
         profileImageView.addGestureRecognizer(imageTab)
+    }
+    func addStudentConfiguration() {
+        if let student = student {
+            navigationItem.title = "Update Student"
+            nameField.text = student.name
+            ageField.text = String(student.age)
+            emailField.text = student.email
+            passwordField.text = student.password
+            if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first{
+                let imageURL = documentDirectory.appendingPathComponent(student.imageName ?? "Image_not_available").appendingPathExtension("png")
+                profileImageView.image = UIImage(contentsOfFile: imageURL.path)
+                submitButton.setTitle("Update", for: .normal)
+            }
+            isImageSelectedByStudent = true
+        }else{
+            navigationItem.title = "Add Student"
+            submitButton.setTitle("Register", for: .normal)
+        }
     }
 }
 

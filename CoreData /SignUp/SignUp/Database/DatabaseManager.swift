@@ -15,16 +15,7 @@ class DatabaseManager {
     
     func addStudent(stud:StudentModel){
         let student = Student(context: context)
-        student.name = stud.name
-        student.age = stud.age
-        student.email = stud.email
-        student.password = stud.password
-        student.imageName = stud.imageName
-        do{
-            try context.save()
-        }catch{
-            print("Student Saving Error: \(error)")
-        }
+        addUpdateStudent(stud: stud, student: student)
     }
     
     func fetchStudents() -> [Student] {
@@ -38,5 +29,41 @@ class DatabaseManager {
         return students
     }
     
+    func updateStudent(stud: StudentModel, student: Student){
+        addUpdateStudent(stud: stud, student: student)
+        saveContext()
+    }
     
+    func addUpdateStudent(stud: StudentModel, student: Student) {
+        student.name = stud.name
+        student.age = stud.age
+        student.email = stud.email
+        student.password = stud.password
+        student.imageName = stud.imageName
+        saveContext()
+    }
+    
+    func saveContext() {
+        do{
+            try context.save()
+        }catch{
+            print("Student saving error: ", error)
+        }
+    }
+    
+    func deleteStudent(student: Student){
+        
+        if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            
+            let fileURL = documentsDirectory.appendingPathComponent(student.imageName ?? "Image_not_available").appendingPathExtension("png")
+            do{
+                try FileManager.default.removeItem(at: fileURL)
+            }catch{
+                print("Remove image from Document Directory",error)
+            }
+        }
+        
+        context.delete(student)
+        saveContext()
+    }
 }
