@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="20G165" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Person" representedClassName="Person" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="phones" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Phone"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="email"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="Phone" representedClassName="Phone" syncable="YES">
+        <attribute name="companyName" optional="YES" attributeType="String"/>
+        <attribute name="imeiNumber" optional="YES" attributeType="String" maxValueString="15"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="imeiNumber"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <elements>
+        <element name="Person" positionX="-54" positionY="-9" width="128" height="74"/>
+        <element name="Phone" positionX="216.3845825195312" positionY="-49.12127685546875" width="128" height="59"/>
+    </elements>
+</model>
