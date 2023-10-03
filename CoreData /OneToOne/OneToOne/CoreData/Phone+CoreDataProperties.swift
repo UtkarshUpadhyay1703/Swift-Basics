@@ -34,13 +34,15 @@ class PhoneManager : Identifiable {
     }
     
     func addPhone(phone: PhoneModel) -> Bool{
-        if (getPhone(imei: phone.imeiNumber ?? "").imeiNumber != nil){
+        if (isPhoneExist(imei: phone.imeiNumber ?? "")){
             print("This Phone is already Present")
             return false
         } else{
+            //            print("imei = \(phone.imeiNumber)")
             let newPhone = Phone(context: context)
             newPhone.companyName = phone.companyName
             newPhone.imeiNumber = phone.imeiNumber ?? "111111111111111"
+            //            print("imei = \(newPhone.imeiNumber)")
             saveContext()
             return true
         }
@@ -59,25 +61,35 @@ class PhoneManager : Identifiable {
     func getPhone(imei: String) -> Phone {
         let phones: [Phone] = getAllPhones()
         for phone in phones {
-            if phone.imeiNumber == imei { return phone}
+            if phone.imeiNumber == imei {
+                return phone
+            }
         }
+        //This condition will never be happen
         return Phone()
     }
     
-    func deletePhone(phone: PhoneModel) -> Bool{
-        if (getPhone(imei: phone.imeiNumber ?? "").imeiNumber != nil){
-            let newPhone:Phone = Phone()
-            newPhone.imeiNumber = phone.imeiNumber
-            newPhone.companyName = phone.companyName
-            context.delete(newPhone)
+    func isPhoneExist(imei: String) -> Bool {
+        let phones: [Phone] = getAllPhones()
+        for phone in phones {
+            if phone.imeiNumber == imei {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func deletePhone(imei: String) -> Bool{
+        if (isPhoneExist(imei: imei)){
+            let phone = getPhone(imei: imei)
+            context.delete(phone)
             saveContext()
+            print("Deleted Phone !!!!!!")
             return true
-        }else{ print("Not Exist")
+        }else{ print("This Phone Number is not Exist !!!!!")
             return false
         }
     }
-    
-
     
     func saveContext() {
         do {

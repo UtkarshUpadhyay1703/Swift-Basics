@@ -11,15 +11,15 @@ import CoreData
 import UIKit
 
 extension Person {
-
+    
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Person> {
         return NSFetchRequest<Person>(entityName: "Person")
     }
-
+    
     @NSManaged public var email: String?
     @NSManaged public var name: String?
     @NSManaged public var phones: Phone?
-
+    
 }
 
 class PersonModel{
@@ -35,37 +35,47 @@ class PersonManager : Identifiable {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
     
-    func addPerson(person: PersonModel){
+    func addPerson(person: PersonModel) -> String{
         //Adding new Phone first
-        let newPhone:PhoneModel = PhoneModel()
-        newPhone.companyName = person.phones?.companyName
-        newPhone.imeiNumber = person.phones?.imeiNumber ?? "111111111111111"
-        if (phoneManager.addPhone(phone: newPhone)){
-        let newPerson = Person(context: context)
-        //Adding new Person first
-        newPerson.email = person.email
-        newPerson.name = person.name
-        newPerson.phones = phoneManager.getPhone(imei: newPhone.imeiNumber ?? "111111111111111")
-        saveContext()
+        if(!isPersonExist(email: person.email ?? "")){
+            let newPhone:PhoneModel = PhoneModel()
+            newPhone.companyName = person.phones?.companyName
+            newPhone.imeiNumber = person.phones?.imeiNumber ?? "111111111111111"
+//            print("imei = \(newPhone.imeiNumber)")
+            if (phoneManager.addPhone(phone: newPhone)){
+                let newPerson = Person(context: context)
+                //Adding new Person first
+                newPerson.email = person.email
+                newPerson.name = person.name
+                newPerson.phones = phoneManager.getPhone(imei: newPhone.imeiNumber ?? "111111111111111")
+//                print("imei = \(newPhone.imeiNumber) email = \(newPerson.email)")
+                saveContext()
+                return "Added Person !!!!"
+            }else{
+                return "Not saved, phone already Exist !!!!"
+            }
         }else{
-            print("Person not saved !!!!")
+            return "Person already exists !!!!!!!"
         }
     }
     
-    func deletePerson(person:PersonModel) -> Bool{
-        if (getPerson(email: person.email ?? "").email != nil){
-            phoneManager.deletePhone(phone: person.phones ?? PhoneModel())
-            let newPerson:Person = Person()
-            newPerson.name = person.name
-            newPerson.email = person.email
-            newPerson.phones?.companyName = person.phones?.companyName
-            newPerson.phones?.imeiNumber = person.phones?.imeiNumber
-        context.delete(newPerson)
-        saveContext()
-            return true
+        func deletePerson(email:String) -> Bool{
+            if (isPersonExist(email: email)){
+                let person = getPerson(email: email)
+                if(!phoneManager.deletePhone(imei: person.phones?.imeiNumber ?? "111111111111111")) {
+                    print("This Person is not having any Phone")
+                }else{
+                    print("Deleted Phone of this person !!!!!")
+                }
+                context.delete(person)
+                saveContext()
+                print("Deleted Person !!!!!")
+                return true
+            }else{
+                print("Not having Person !!!!!!")
+            }
+            return false
         }
-        return false
-    }
     
     func getAllPersons() -> [Person] {
         var persons:[Person] = []
@@ -81,10 +91,21 @@ class PersonManager : Identifiable {
         let persons:[Person] = getAllPersons()
         for person in persons {
             if person.email == email {
-            return person
+                return person
             }
         }
+        //This code should never be execute
         return Person()
+    }
+    
+    func isPersonExist(email: String) -> Bool {
+        let persons:[Person] = getAllPersons()
+        for person in persons {
+            if person.email == email {
+                return true
+            }
+        }
+        return false
     }
     
     func saveContext() {
