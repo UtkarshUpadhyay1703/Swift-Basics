@@ -41,14 +41,14 @@ class PersonManager : Identifiable {
             let newPhone:PhoneModel = PhoneModel()
             newPhone.companyName = person.phones?.companyName
             newPhone.imeiNumber = person.phones?.imeiNumber ?? "111111111111111"
-//            print("imei = \(newPhone.imeiNumber)")
+            //            print("imei = \(newPhone.imeiNumber)")
             if (phoneManager.addPhone(phone: newPhone)){
                 let newPerson = Person(context: context)
                 //Adding new Person first
                 newPerson.email = person.email
                 newPerson.name = person.name
                 newPerson.phones = phoneManager.getPhone(imei: newPhone.imeiNumber ?? "111111111111111")
-//                print("imei = \(newPhone.imeiNumber) email = \(newPerson.email)")
+                //                print("imei = \(newPhone.imeiNumber) email = \(newPerson.email)")
                 saveContext()
                 return "Added Person !!!!"
             }else{
@@ -59,23 +59,23 @@ class PersonManager : Identifiable {
         }
     }
     
-        func deletePerson(email:String) -> Bool{
-            if (isPersonExist(email: email)){
-                let person = getPerson(email: email)
-                if(!phoneManager.deletePhone(imei: person.phones?.imeiNumber ?? "111111111111111")) {
-                    print("This Person is not having any Phone")
-                }else{
-                    print("Deleted Phone of this person !!!!!")
-                }
-                context.delete(person)
-                saveContext()
-                print("Deleted Person !!!!!")
-                return true
+    func deletePerson(email:String) -> Bool{
+        if (isPersonExist(email: email)){
+            let person = getPerson(email: email)
+            if(!phoneManager.deletePhone(imei: person.phones?.imeiNumber ?? "111111111111111")) {
+                print("This Person is not having any Phone")
             }else{
-                print("Not having Person !!!!!!")
+                print("Deleted Phone of this person !!!!!")
             }
-            return false
+            context.delete(person)
+            saveContext()
+            print("Deleted Person !!!!!")
+            return true
+        }else{
+            print("Not having Person !!!!!!")
         }
+        return false
+    }
     
     func getAllPersons() -> [Person] {
         var persons:[Person] = []
