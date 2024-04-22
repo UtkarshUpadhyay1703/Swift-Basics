@@ -48,7 +48,7 @@ class LocalFileManager {
                 
     }
     
-    func getImageFromAssets
+//    func getImageFromAssets
     
     func saveImage(){
         
